@@ -1,8 +1,8 @@
-# 📚 Documentação do Projeto: Notifaltas - Controle de Faltas Universitárias
+# 📚 Documentação do Projeto: Faltei - Controle de Faltas Universitárias
 
 ## Visão Geral do Aplicativo
 
-O **Notifaltas** é um aplicativo mobile focado em ajudar estudantes universitários a monitorar e gerenciar suas faltas por disciplina, enviando notificações agendadas para garantir o registro preciso da frequência.
+O **Faltei** é um aplicativo mobile focado em ajudar estudantes universitários a monitorar e gerenciar suas faltas por disciplina, enviando notificações agendadas para garantir o registro preciso da frequência.
 
 ---
 
@@ -50,7 +50,7 @@ O **Notifaltas** é um aplicativo mobile focado em ajudar estudantes universitá
 
 ## 🛑 4. Restrições e Limitações do Escopo (MVP)
 
-As seguintes funcionalidades estão **fora do escopo inicial** (MVP - Minimum Viable Product) do Notifaltas:
+As seguintes funcionalidades estão **fora do escopo inicial** (MVP - Minimum Viable Product) do Faltei:
 
 | Restrição | Descrição |
 | :--- | :--- |
