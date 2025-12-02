@@ -63,6 +63,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the app (and database)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppViewModel>().initialize();
+    });
+  }
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
