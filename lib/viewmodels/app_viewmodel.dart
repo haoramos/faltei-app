@@ -1,4 +1,3 @@
-import 'package:faltei/services/database_service.dart';
 import 'package:flutter/material.dart';
 
 class AppViewModel extends ChangeNotifier {
@@ -6,8 +5,7 @@ class AppViewModel extends ChangeNotifier {
 
   bool get isInitialized => _isInitialized;
 
-  Future<void> initialize() async {
-    await DatabaseService().database;
+  void initialize() {
     _isInitialized = true;
     notifyListeners();
   }
