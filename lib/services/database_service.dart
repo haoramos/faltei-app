@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
+import 'package:faltei/models/disciplina.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -72,5 +73,34 @@ class DatabaseService {
         FOREIGN KEY (disciplinaId) REFERENCES disciplinas (id) ON DELETE CASCADE
       )
     ''');
+  }
+  // CRUD Disciplina
+
+  Future<int> insertDisciplina(Disciplina disciplina) async {
+    final db = await database;
+    return await db.insert('disciplinas', disciplina.toMap());
+  }
+
+  Future<List<Disciplina>> getDisciplinas() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('disciplinas');
+    return List.generate(maps.length, (i) {
+      return Disciplina.fromMap(maps[i]);
+    });
+  }
+
+  Future<int> updateDisciplina(Disciplina disciplina) async {
+    final db = await database;
+    return await db.update(
+      'disciplinas',
+      disciplina.toMap(),
+      where: 'id = ?',
+      whereArgs: [disciplina.id],
+    );
+  }
+
+  Future<int> deleteDisciplina(int id) async {
+    final db = await database;
+    return await db.delete('disciplinas', where: 'id = ?', whereArgs: [id]);
   }
 }

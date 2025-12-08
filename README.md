@@ -28,5 +28,5 @@ O projeto adota a arquitetura **MVVM** e é organizado para facilitar a escalabi
 * **Linguagem:** Dart (Versão 3.10.1)
 * **Arquitetura:** MVVM (Model-View-ViewModel)
 * **Gerenciamento de Estado:** `provider`
-* **Persistência Local:** Sqflite / Hive (a definir)
+* **Persistência Local:** Sqflite
 * **Notificações:** `flutter_local_notifications`
