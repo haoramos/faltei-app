@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DisciplinaRegistrationScreen extends StatefulWidget {
-  const DisciplinaRegistrationScreen({super.key});
+  final Disciplina? disciplina;
+
+  const DisciplinaRegistrationScreen({super.key, this.disciplina});
 
   @override
   State<DisciplinaRegistrationScreen> createState() =>
@@ -14,9 +16,9 @@ class DisciplinaRegistrationScreen extends StatefulWidget {
 class _DisciplinaRegistrationScreenState
     extends State<DisciplinaRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nomeController = TextEditingController();
-  final _aulasController = TextEditingController();
-  final _faltasController = TextEditingController();
+  late TextEditingController _nomeController;
+  late TextEditingController _aulasController;
+  late TextEditingController _faltasController;
 
   String _selectedColor = '#607D8B'; // Default BlueGrey
 
@@ -32,6 +34,23 @@ class _DisciplinaRegistrationScreenState
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _nomeController = TextEditingController(
+      text: widget.disciplina?.nome ?? '',
+    );
+    _aulasController = TextEditingController(
+      text: widget.disciplina?.totalAulas.toString() ?? '',
+    );
+    _faltasController = TextEditingController(
+      text: widget.disciplina?.limiteFaltas.toString() ?? '',
+    );
+    if (widget.disciplina != null) {
+      _selectedColor = widget.disciplina!.cor;
+    }
+  }
+
+  @override
   void dispose() {
     _nomeController.dispose();
     _aulasController.dispose();
@@ -42,6 +61,7 @@ class _DisciplinaRegistrationScreenState
   Future<void> _saveDisciplina() async {
     if (_formKey.currentState!.validate()) {
       final disciplina = Disciplina(
+        id: widget.disciplina?.id,
         nome: _nomeController.text,
         totalAulas: int.parse(_aulasController.text),
         limiteFaltas: int.parse(_faltasController.text),
@@ -49,7 +69,12 @@ class _DisciplinaRegistrationScreenState
       );
 
       final viewModel = context.read<DisciplinaViewModel>();
-      await viewModel.addDisciplina(disciplina);
+
+      if (widget.disciplina == null) {
+        await viewModel.addDisciplina(disciplina);
+      } else {
+        await viewModel.updateDisciplina(disciplina);
+      }
 
       if (!mounted) return;
 
@@ -59,17 +84,63 @@ class _DisciplinaRegistrationScreenState
         ).showSnackBar(SnackBar(content: Text(viewModel.error!)));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Disciplina cadastrada com sucesso!')),
+          SnackBar(
+            content: Text(
+              widget.disciplina == null
+                  ? 'Disciplina cadastrada!'
+                  : 'Disciplina atualizada!',
+            ),
+          ),
         );
         Navigator.pop(context);
       }
     }
   }
 
+  Future<void> _deleteDisciplina() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir Disciplina'),
+        content: const Text('Tem certeza? Essa ação não pode ser desfeita.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && widget.disciplina?.id != null) {
+      if (!mounted) return;
+      final viewModel = context.read<DisciplinaViewModel>();
+      await viewModel.deleteDisciplina(widget.disciplina!.id!);
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nova Disciplina')),
+      appBar: AppBar(
+        title: Text(
+          widget.disciplina == null ? 'Nova Disciplina' : 'Editar Disciplina',
+        ),
+        actions: [
+          if (widget.disciplina != null)
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: _deleteDisciplina,
+            ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -182,7 +253,11 @@ class _DisciplinaRegistrationScreenState
                     : _saveDisciplina,
                 child: context.watch<DisciplinaViewModel>().isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Salvar Disciplina'),
+                    : Text(
+                        widget.disciplina == null
+                            ? 'Salvar Disciplina'
+                            : 'Atualizar Disciplina',
+                      ),
               ),
             ],
           ),
